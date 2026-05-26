@@ -49,8 +49,9 @@ def kind_for(section: dict) -> str:
         for key in ("title", "narration", "visual_prompt")
     ).lower()
     checks = [
-        ("pipeline", ("编译", "pipeline", "source", "资料", "ingest", "输入", "输出")),
-        ("graph", ("wiki", "知识", "节点", "关系", "graph", "链接", "概念")),
+        ("comparison", ("对比", "比较", "一边", "另一边", "怎么选", "选择", "vs", "versus", "天平")),
+        ("pipeline", ("编译", "pipeline", "source", "资料", "ingest", "输入", "输出", "进入", "出口", "通道", "管线")),
+        ("graph", ("wiki", "知识", "节点", "关系", "graph", "链接", "概念", "连接", "网络")),
         ("layers", ("三层", "结构", "schema", "规则", "raw", "source of truth")),
         ("loop", ("query", "lint", "维护", "更新", "自我", "循环")),
         ("risk", ("风险", "错误", "幻觉", "审查", "矛盾", "过期")),
@@ -86,41 +87,44 @@ def tiny_label(x: float, y: float, text: str, color: str) -> str:
 
 def pipeline(width: int, height: int, colors: tuple[str, ...]) -> str:
     bg, ink, accent, blue, green, card = colors
-    y = height * 0.44
+    y = height * 0.40
+    block_w = width * 0.23
+    block_h = height * 0.25
     blocks = [
-        (width * 0.16, y, "SOURCE"),
-        (width * 0.43, y, "LLM"),
-        (width * 0.70, y, "WIKI"),
+        (width * 0.18, y, "SOURCE", blue),
+        (width * 0.50, y, "MODEL", accent),
+        (width * 0.82, y, "OUTPUT", green),
     ]
     parts = []
-    for x, yy, label in blocks:
-        parts.append(rounded_rect(x - 135, yy - 105, 270, 210, card, ink, 0.96))
-        parts.append(tiny_label(x - 70, yy + 12, label, ink))
-    parts.append(arrow(width * 0.28, y, width * 0.36, y, accent))
-    parts.append(arrow(width * 0.55, y, width * 0.63, y, accent))
-    for i in range(4):
-        parts.append(rounded_rect(width * 0.10 + i * 34, height * 0.25 + i * 18, 130, 18, blue, "none", 0.32))
+    for x, yy, label, color in blocks:
+        parts.append(rounded_rect(x - block_w / 2, yy - block_h / 2, block_w, block_h, card, "none", 0.54))
+        parts.append(rounded_rect(x - block_w * 0.38, yy - block_h * 0.32, block_w * 0.76, block_h * 0.20, color, "none", 0.86))
+        parts.append(tiny_label(x - block_w * 0.25, yy + block_h * 0.18, label, ink))
+    parts.append(arrow(width * 0.31, y, width * 0.39, y, accent))
+    parts.append(arrow(width * 0.63, y, width * 0.71, y, accent))
     for i in range(7):
-        parts.append(node(width * 0.70 + (i % 3) * 76 - 76, height * 0.34 + (i // 3) * 82, 24, green if i == 0 else blue, card))
+        parts.append(rounded_rect(width * 0.07 + i * 30, height * 0.18 + i * 22, width * 0.12, 18, blue, "none", 0.22 + i * 0.035))
+    for i in range(9):
+        parts.append(node(width * 0.78 + (i % 3) * 80, height * 0.18 + (i // 3) * 86, 28, green if i in (0, 4, 8) else blue, card))
+    parts.append(rounded_rect(width * 0.14, height * 0.70, width * 0.72, height * 0.045, ink, "none", 0.18))
     return "\n".join(parts)
 
 
 def graph(width: int, height: int, colors: tuple[str, ...]) -> str:
     bg, ink, accent, blue, green, card = colors
     coords = [
-        (0.30, 0.32), (0.45, 0.25), (0.61, 0.34), (0.36, 0.51),
-        (0.55, 0.53), (0.70, 0.48), (0.48, 0.68)
+        (0.18, 0.28), (0.35, 0.18), (0.57, 0.28), (0.27, 0.52),
+        (0.51, 0.54), (0.74, 0.45), (0.42, 0.70), (0.70, 0.69)
     ]
     parts = []
-    for a, b in [(0, 1), (1, 2), (0, 3), (3, 4), (4, 2), (4, 5), (3, 6), (6, 5)]:
+    for a, b in [(0, 1), (1, 2), (0, 3), (3, 4), (4, 2), (4, 5), (3, 6), (6, 5), (4, 7), (5, 7)]:
         x1, y1 = coords[a]
         x2, y2 = coords[b]
-        parts.append(f'<line x1="{x1*width:.0f}" y1="{y1*height:.0f}" x2="{x2*width:.0f}" y2="{y2*height:.0f}" stroke="{ink}" stroke-width="8" opacity="0.36"/>')
+        parts.append(f'<line x1="{x1*width:.0f}" y1="{y1*height:.0f}" x2="{x2*width:.0f}" y2="{y2*height:.0f}" stroke="{ink}" stroke-width="12" opacity="0.28"/>')
     for i, (x, y) in enumerate(coords):
         fill = accent if i in (1, 4) else blue if i % 2 else green
-        parts.append(node(x * width, y * height, 42, fill, card))
-    parts.append(rounded_rect(width * 0.25, height * 0.72, width * 0.50, 72, card, "none", 0.9))
-    parts.append(tiny_label(width * 0.37, height * 0.77, "linked knowledge layer", ink))
+        parts.append(node(x * width, y * height, 58, fill, card))
+    parts.append(rounded_rect(width * 0.17, height * 0.76, width * 0.66, 62, ink, "none", 0.14))
     return "\n".join(parts)
 
 
@@ -129,61 +133,88 @@ def layers(width: int, height: int, colors: tuple[str, ...]) -> str:
     parts = []
     labels = [("RAW SOURCES", blue), ("WIKI", accent), ("SCHEMA", green)]
     for i, (label, color) in enumerate(labels):
-        x = width * (0.26 + i * 0.20)
-        y = height * (0.62 - i * 0.13)
-        parts.append(rounded_rect(x, y, width * 0.34, 120, color, card, 0.9))
-        parts.append(tiny_label(x + 58, y + 75, label, card))
-    parts.append(arrow(width * 0.33, height * 0.41, width * 0.63, height * 0.30, accent))
+        x = width * (0.16 + i * 0.18)
+        y = height * (0.62 - i * 0.14)
+        parts.append(rounded_rect(x, y, width * 0.48, 134, color, card, 0.82))
+        parts.append(tiny_label(x + 64, y + 84, label, card))
+    parts.append(arrow(width * 0.24, height * 0.34, width * 0.68, height * 0.22, accent))
+    parts.append(rounded_rect(width * 0.12, height * 0.22, width * 0.76, height * 0.50, ink, "none", 0.08))
     return "\n".join(parts)
 
 
 def loop(width: int, height: int, colors: tuple[str, ...]) -> str:
     bg, ink, accent, blue, green, card = colors
-    cx, cy = width * 0.50, height * 0.47
+    cx, cy = width * 0.50, height * 0.42
     parts = [
-        f'<circle cx="{cx:.0f}" cy="{cy:.0f}" r="{height*0.25:.0f}" fill="none" stroke="{ink}" stroke-width="30" opacity="0.14"/>',
-        f'<path d="M{cx-height*0.25:.0f},{cy:.0f} A{height*0.25:.0f},{height*0.25:.0f} 0 1 1 {cx+height*0.20:.0f},{cy+height*0.15:.0f}" fill="none" stroke="{accent}" stroke-width="18" stroke-linecap="round" marker-end="url(#arrow)"/>',
+        f'<circle cx="{cx:.0f}" cy="{cy:.0f}" r="{height*0.30:.0f}" fill="none" stroke="{ink}" stroke-width="42" opacity="0.12"/>',
+        f'<path d="M{cx-height*0.30:.0f},{cy:.0f} A{height*0.30:.0f},{height*0.30:.0f} 0 1 1 {cx+height*0.25:.0f},{cy+height*0.17:.0f}" fill="none" stroke="{accent}" stroke-width="24" stroke-linecap="round" marker-end="url(#arrow)"/>',
     ]
-    labels = [("INGEST", cx, cy - height * 0.27, blue), ("QUERY", cx + width * 0.20, cy + 20, green), ("LINT", cx - width * 0.20, cy + 20, accent)]
+    labels = [("INGEST", cx, cy - height * 0.32, blue), ("QUERY", cx + width * 0.26, cy + 20, green), ("LINT", cx - width * 0.26, cy + 20, accent)]
     for label, x, y, color in labels:
-        parts.append(rounded_rect(x - 110, y - 48, 220, 96, color, card, 0.95))
-        parts.append(tiny_label(x - 55, y + 10, label, card))
+        parts.append(rounded_rect(x - 145, y - 60, 290, 120, color, card, 0.92))
+        parts.append(tiny_label(x - 75, y + 12, label, card))
     return "\n".join(parts)
 
 
 def risk(width: int, height: int, colors: tuple[str, ...]) -> str:
     bg, ink, accent, blue, green, card = colors
     parts = [
-        rounded_rect(width * 0.23, height * 0.24, width * 0.54, height * 0.38, card, ink, 0.95),
-        f'<path d="M{width*0.50:.0f},{height*0.31:.0f} L{width*0.64:.0f},{height*0.55:.0f} L{width*0.36:.0f},{height*0.55:.0f} Z" fill="{accent}" opacity="0.92"/>',
-        f'<text x="{width*0.50:.0f}" y="{height*0.50:.0f}" text-anchor="middle" class="bang" fill="{card}">!</text>',
+        rounded_rect(width * 0.16, height * 0.18, width * 0.68, height * 0.50, card, ink, 0.72),
+        f'<path d="M{width*0.42:.0f},{height*0.25:.0f} L{width*0.58:.0f},{height*0.55:.0f} L{width*0.26:.0f},{height*0.55:.0f} Z" fill="{accent}" opacity="0.92"/>',
+        f'<text x="{width*0.42:.0f}" y="{height*0.50:.0f}" text-anchor="middle" class="bang" fill="{card}">!</text>',
+        f'<path d="M{width*0.66:.0f},{height*0.24:.0f} C{width*0.78:.0f},{height*0.28:.0f} {width*0.80:.0f},{height*0.44:.0f} {width*0.68:.0f},{height*0.58:.0f} C{width*0.56:.0f},{height*0.44:.0f} {width*0.58:.0f},{height*0.28:.0f} {width*0.66:.0f},{height*0.24:.0f} Z" fill="{blue}" opacity="0.86"/>',
     ]
     for i, color in enumerate((green, blue, green)):
-        parts.append(f'<path d="M{width*(0.30+i*0.20):.0f},{height*0.72:.0f} l60,45 l110,-92" fill="none" stroke="{color}" stroke-width="14" stroke-linecap="round"/>')
+        parts.append(f'<path d="M{width*(0.28+i*0.18):.0f},{height*0.72:.0f} l66,48 l132,-112" fill="none" stroke="{color}" stroke-width="18" stroke-linecap="round"/>')
     return "\n".join(parts)
 
 
 def dashboard(width: int, height: int, colors: tuple[str, ...]) -> str:
     bg, ink, accent, blue, green, card = colors
-    parts = [rounded_rect(width * 0.18, height * 0.20, width * 0.64, height * 0.52, card, "none", 0.96)]
-    for i, h in enumerate((150, 240, 105, 300, 210)):
-        x = width * 0.28 + i * 115
-        parts.append(rounded_rect(x, height * 0.64 - h, 70, h, [blue, green, accent, blue, green][i], "none", 0.92))
-    parts.append(f'<polyline points="{width*0.26:.0f},{height*0.55:.0f} {width*0.38:.0f},{height*0.45:.0f} {width*0.50:.0f},{height*0.50:.0f} {width*0.64:.0f},{height*0.32:.0f} {width*0.74:.0f},{height*0.38:.0f}" fill="none" stroke="{ink}" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>')
+    parts = [rounded_rect(width * 0.08, height * 0.16, width * 0.84, height * 0.56, card, "none", 0.40)]
+    for i in range(7):
+        y = height * (0.22 + i * 0.07)
+        parts.append(f'<line x1="{width*0.12:.0f}" y1="{y:.0f}" x2="{width*0.88:.0f}" y2="{y:.0f}" stroke="{ink}" stroke-width="3" opacity="0.10"/>')
+    for i, h in enumerate((190, 300, 130, 390, 265, 340)):
+        x = width * 0.18 + i * width * 0.105
+        parts.append(rounded_rect(x, height * 0.65 - h, width * 0.055, h, [blue, green, accent, blue, green, accent][i], "none", 0.88))
+    parts.append(f'<polyline points="{width*0.14:.0f},{height*0.58:.0f} {width*0.28:.0f},{height*0.48:.0f} {width*0.42:.0f},{height*0.54:.0f} {width*0.60:.0f},{height*0.30:.0f} {width*0.77:.0f},{height*0.39:.0f} {width*0.88:.0f},{height*0.27:.0f}" fill="none" stroke="{ink}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>')
+    return "\n".join(parts)
+
+
+def comparison(width: int, height: int, colors: tuple[str, ...]) -> str:
+    bg, ink, accent, blue, green, card = colors
+    parts = [
+        f'<path d="M0,0 H{width*0.52:.0f} L{width*0.43:.0f},{height*0.74:.0f} H0 Z" fill="{blue}" opacity="0.26"/>',
+        f'<path d="M{width*0.48:.0f},0 H{width} V{height*0.74:.0f} H{width*0.57:.0f} Z" fill="{accent}" opacity="0.22"/>',
+        f'<path d="M{width*0.09:.0f},{height*0.23:.0f} C{width*0.17:.0f},{height*0.15:.0f} {width*0.36:.0f},{height*0.17:.0f} {width*0.43:.0f},{height*0.27:.0f} V{height*0.58:.0f} C{width*0.31:.0f},{height*0.52:.0f} {width*0.19:.0f},{height*0.57:.0f} {width*0.09:.0f},{height*0.48:.0f} Z" fill="{card}" opacity="0.38"/>',
+        f'<path d="M{width*0.57:.0f},{height*0.18:.0f} C{width*0.69:.0f},{height*0.09:.0f} {width*0.87:.0f},{height*0.16:.0f} {width*0.91:.0f},{height*0.30:.0f} V{height*0.58:.0f} C{width*0.77:.0f},{height*0.53:.0f} {width*0.66:.0f},{height*0.61:.0f} {width*0.57:.0f},{height*0.49:.0f} Z" fill="{card}" opacity="0.38"/>',
+    ]
+    for i in range(5):
+        parts.append(rounded_rect(width * 0.14, height * (0.29 + i * 0.052), width * (0.20 - i * 0.018), height * 0.025, blue, "none", 0.78))
+        parts.append(f'<circle cx="{width*(0.64+i*0.045):.0f}" cy="{height*(0.29+(i%3)*0.07):.0f}" r="{height*0.038:.0f}" fill="{[accent, green, blue][i%3]}" opacity="0.90"/>')
+        if i > 0:
+            parts.append(f'<line x1="{width*(0.64+(i-1)*0.045):.0f}" y1="{height*(0.29+((i-1)%3)*0.07):.0f}" x2="{width*(0.64+i*0.045):.0f}" y2="{height*(0.29+(i%3)*0.07):.0f}" stroke="{ink}" stroke-width="6" opacity="0.18"/>')
+    parts.append(f'<line x1="{width*0.50:.0f}" y1="{height*0.27:.0f}" x2="{width*0.50:.0f}" y2="{height*0.64:.0f}" stroke="{ink}" stroke-width="10" opacity="0.36"/>')
+    parts.append(f'<path d="M{width*0.36:.0f},{height*0.38:.0f} Q{width*0.50:.0f},{height*0.48:.0f} {width*0.64:.0f},{height*0.38:.0f}" fill="none" stroke="{ink}" stroke-width="11" opacity="0.45"/>')
+    parts.append(f'<circle cx="{width*0.50:.0f}" cy="{height*0.38:.0f}" r="{height*0.045:.0f}" fill="{accent}" stroke="{card}" stroke-width="8"/>')
+    parts.append(rounded_rect(width * 0.26, height * 0.68, width * 0.48, height * 0.055, ink, "none", 0.16))
     return "\n".join(parts)
 
 
 def scene(width: int, height: int, colors: tuple[str, ...]) -> str:
     bg, ink, accent, blue, green, card = colors
     return "\n".join([
-        rounded_rect(width * 0.18, height * 0.22, width * 0.64, height * 0.46, card, "none", 0.94),
-        f'<circle cx="{width*0.36:.0f}" cy="{height*0.43:.0f}" r="95" fill="{accent}" opacity="0.92"/>',
-        rounded_rect(width * 0.48, height * 0.34, 290, 190, blue, card, 0.86),
-        f'<path d="M{width*0.33:.0f},{height*0.62:.0f} C{width*0.44:.0f},{height*0.72:.0f} {width*0.60:.0f},{height*0.72:.0f} {width*0.70:.0f},{height*0.57:.0f}" fill="none" stroke="{green}" stroke-width="18" stroke-linecap="round"/>',
+        f'<path d="M{width*0.08:.0f},{height*0.62:.0f} C{width*0.24:.0f},{height*0.28:.0f} {width*0.56:.0f},{height*0.20:.0f} {width*0.88:.0f},{height*0.56:.0f}" fill="none" stroke="{green}" stroke-width="28" stroke-linecap="round" opacity="0.80"/>',
+        rounded_rect(width * 0.14, height * 0.22, width * 0.32, height * 0.34, card, "none", 0.68),
+        rounded_rect(width * 0.54, height * 0.18, width * 0.30, height * 0.40, blue, card, 0.76),
+        f'<circle cx="{width*0.35:.0f}" cy="{height*0.41:.0f}" r="{height*0.11:.0f}" fill="{accent}" opacity="0.82"/>',
+        f'<path d="M{width*0.58:.0f},{height*0.27:.0f} h{width*0.19:.0f} v{height*0.20:.0f} h-{width*0.19:.0f} Z" fill="{card}" opacity="0.76"/>',
     ])
 
 
 DRAWERS = {
+    "comparison": comparison,
     "pipeline": pipeline,
     "graph": graph,
     "layers": layers,
@@ -197,7 +228,6 @@ DRAWERS = {
 def svg_for(section: dict, index: int, total: int, style: str, width: int, height: int) -> str:
     colors = PALETTES.get(style, PALETTES["editorial-cinematic"])
     bg, ink, accent, blue, green, card = colors
-    section_id = esc(section.get("id") or f"sec-{index + 1}")
     title = esc(section.get("title") or f"Section {index + 1}")
     kind = kind_for(section)
     art = DRAWERS[kind](width, height, colors)
@@ -216,12 +246,16 @@ def svg_for(section: dict, index: int, total: int, style: str, width: int, heigh
     </filter>
   </defs>
   <rect width="{width}" height="{height}" fill="url(#bg)"/>
-  <circle cx="{width * 0.10:.0f}" cy="{height * 0.18:.0f}" r="{height * 0.11:.0f}" fill="{blue}" opacity="0.14"/>
-  <circle cx="{width * 0.88:.0f}" cy="{height * 0.76:.0f}" r="{height * 0.15:.0f}" fill="{accent}" opacity="0.15"/>
+  <path d="M0,{height * 0.18:.0f} C{width * 0.24:.0f},{height * 0.06:.0f} {width * 0.46:.0f},{height * 0.22:.0f} {width:.0f},{height * 0.08:.0f} V0 H0 Z" fill="{blue}" opacity="0.08"/>
+  <path d="M0,{height * 0.75:.0f} C{width * 0.28:.0f},{height * 0.64:.0f} {width * 0.60:.0f},{height * 0.86:.0f} {width:.0f},{height * 0.67:.0f} V{height:.0f} H0 Z" fill="{ink}" opacity="0.08"/>
+  <g opacity="0.10">
+    <line x1="{width * 0.08:.0f}" y1="{height * 0.16:.0f}" x2="{width * 0.92:.0f}" y2="{height * 0.16:.0f}" stroke="{ink}" stroke-width="4"/>
+    <line x1="{width * 0.08:.0f}" y1="{height * 0.72:.0f}" x2="{width * 0.92:.0f}" y2="{height * 0.72:.0f}" stroke="{ink}" stroke-width="4"/>
+    <line x1="{width * 0.08:.0f}" y1="{height * 0.16:.0f}" x2="{width * 0.08:.0f}" y2="{height * 0.72:.0f}" stroke="{ink}" stroke-width="4"/>
+    <line x1="{width * 0.92:.0f}" y1="{height * 0.16:.0f}" x2="{width * 0.92:.0f}" y2="{height * 0.72:.0f}" stroke="{ink}" stroke-width="4"/>
+  </g>
   <g filter="url(#shadow)">{art}</g>
-  <text x="{width * 0.06:.0f}" y="{height * 0.10:.0f}" class="meta" fill="{accent}">{section_id.upper()} / {index + 1:02d}-{total:02d}</text>
   <style>
-    .meta {{ font: 800 28px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2px; }}
     .tiny {{ font: 800 34px -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans CJK SC", sans-serif; letter-spacing: 1px; }}
     .bang {{ font: 900 132px -apple-system, BlinkMacSystemFont, sans-serif; }}
   </style>

@@ -16,11 +16,14 @@
       --accent: #f05a3f;
       --accent-2: #1768ac;
       --muted: rgba(16, 20, 31, 0.62);
+      --title-scrim: rgba(247, 247, 242, 0.72);
+      --title-scrim-soft: rgba(247, 247, 242, 0.16);
+      --title-shadow: 0 2px 18px rgba(255, 255, 255, 0.24);
       --title-font: "Source Han Sans CN", "PingFang SC", "Inter", system-ui, sans-serif;
       --body-font: var(--title-font);
       --radius: 14px;
       --title-size: 64px;
-      --body-size: 24px;
+      --body-size: 22px;
     }
     body[data-style="editorial-cinematic"] {
       --bg: #f7f7f2;
@@ -39,6 +42,9 @@
       --accent: #ff9c39;
       --accent-2: #46d2ff;
       --muted: rgba(255, 255, 255, 0.65);
+      --title-scrim: rgba(15, 22, 38, 0.72);
+      --title-scrim-soft: rgba(15, 22, 38, 0.24);
+      --title-shadow: 0 2px 18px rgba(0, 0, 0, 0.38);
       --radius: 24px;
     }
     body[data-style="bloomberg"] {
@@ -48,6 +54,9 @@
       --accent: #00d96a;
       --accent-2: #ff3a3a;
       --muted: rgba(255, 255, 255, 0.55);
+      --title-scrim: rgba(5, 7, 13, 0.78);
+      --title-scrim-soft: rgba(5, 7, 13, 0.24);
+      --title-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
       --title-font: "Source Han Serif CN", "Roboto Slab", Georgia, serif;
       --radius: 4px;
     }
@@ -58,6 +67,9 @@
       --accent: #e63946;
       --accent-2: #ffd60a;
       --muted: #666;
+      --title-scrim: rgba(250, 248, 243, 0.72);
+      --title-scrim-soft: rgba(250, 248, 243, 0.16);
+      --title-shadow: 0 2px 18px rgba(255, 255, 255, 0.24);
       --title-font: "Source Han Sans CN", "Helvetica Neue", sans-serif;
       --radius: 0px;
     }
@@ -68,6 +80,9 @@
       --accent: #00f0ff;
       --accent-2: #ff2bd6;
       --muted: rgba(255, 247, 0, 0.6);
+      --title-scrim: rgba(13, 0, 20, 0.78);
+      --title-scrim-soft: rgba(13, 0, 20, 0.26);
+      --title-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
       --title-font: "Source Han Sans CN", "Inter", sans-serif;
       --radius: 8px;
     }
@@ -78,6 +93,9 @@
       --accent: #2c3e50;
       --accent-2: #8b3a3a;
       --muted: #888;
+      --title-scrim: rgba(250, 248, 243, 0.72);
+      --title-scrim-soft: rgba(250, 248, 243, 0.16);
+      --title-shadow: 0 2px 18px rgba(255, 255, 255, 0.24);
       --title-font: "Source Han Serif CN", Georgia, serif;
       --radius: 0px;
     }
@@ -88,6 +106,9 @@
       --accent: #0071e3;
       --accent-2: #ff3b30;
       --muted: #888;
+      --title-scrim: rgba(255, 255, 255, 0.72);
+      --title-scrim-soft: rgba(255, 255, 255, 0.16);
+      --title-shadow: 0 2px 18px rgba(255, 255, 255, 0.24);
       --title-font: "PingFang SC", -apple-system, sans-serif;
       --radius: 16px;
       --title-size: 96px;
@@ -120,11 +141,25 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 5vh 10vw 24vh;
+      padding: 0;
       opacity: 0;
       visibility: hidden;
       transition: opacity 600ms ease, transform 600ms ease;
       transform: translateY(20px);
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--bg-grad);
+    }
+    section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, var(--title-scrim) 0%, var(--title-scrim-soft) 30%, rgba(0, 0, 0, 0) 56%),
+        linear-gradient(180deg, var(--title-scrim) 0%, rgba(0, 0, 0, 0) 24%),
+        linear-gradient(0deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.20) 24%, rgba(0, 0, 0, 0) 48%);
     }
     section.active {
       opacity: 1;
@@ -132,23 +167,33 @@
       transform: translateY(0);
     }
     section img {
-      max-width: 70%;
-      max-height: 38vh;
-      border-radius: var(--radius);
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
       object-fit: cover;
-      margin-bottom: 0;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      margin: 0;
+      box-shadow: none;
+      transform: scale(1.01);
     }
     section h2 {
       font-family: var(--title-font);
-      order: -1;
+      position: absolute;
+      top: 8vh;
+      left: 7vw;
+      z-index: 2;
       font-size: clamp(36px, 4vw, 54px);
       font-weight: 700;
-      text-align: center;
-      max-width: 76%;
-      line-height: 1.2;
+      text-align: left;
+      max-width: min(68vw, 1100px);
+      line-height: 1.24;
       color: var(--fg);
-      margin-bottom: 2vh;
+      text-wrap: balance;
+      text-shadow: var(--title-shadow);
     }
 
     /* ============ 字幕（始终居底）============ */
@@ -167,6 +212,7 @@
       text-align: center;
       z-index: 100;
       pointer-events: none;
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28);
     }
     body[data-style="vox"] .subtitle,
     body[data-style="stratechery"] .subtitle,
@@ -244,26 +290,25 @@
     }
 
     @media (max-width: 700px) {
-      section {
-        padding: 7vh 6vw 31vh;
-      }
       section img {
-        max-width: 92%;
-        max-height: 30vh;
+        transform: scale(1.02);
       }
       section h2 {
-        font-size: 26px;
-        max-width: 92%;
-        margin-bottom: 1.5vh;
+        top: 7vh;
+        left: 6vw;
+        right: 6vw;
+        max-width: none;
+        font-size: clamp(25px, 7vw, 38px);
+        line-height: 1.22;
       }
       .subtitle {
         bottom: 8vh;
         max-width: 92%;
-        max-height: 28vh;
+        max-height: 30vh;
         overflow: hidden;
         padding: 0.75em 1em;
-        font-size: 16px;
-        line-height: 1.45;
+        font-size: 15px;
+        line-height: 1.4;
       }
       .sources {
         left: 4vw;
