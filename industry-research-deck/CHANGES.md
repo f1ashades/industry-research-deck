@@ -1,5 +1,23 @@
 # 改动说明(v2)
 
+## 6. 2026-05-27:语速、视觉和预览质量修正
+
+### 原痛点
+
+- 为了凑 2 分钟把 TTS 降到 `-25%` 会明显不自然。
+- `synthesize-voice.sh --rate -25%` 会被 edge-tts/argparse 当成选项而不是参数。
+- 占位图几乎只是标题卡，缺少机制图、关系图和场景信息。
+- 默认深蓝扁平风和移动端字幕布局容易显得单调、拥挤。
+
+### 改后
+
+- 默认风格改为 `editorial-cinematic`，保留 `kurzgesagt` 但不再默认使用。
+- `synthesize-voice.sh` 支持 `--rate=-10%` / `--rate -10%`，内部统一用 `--rate=<value>` 传给 edge-tts。
+- 新增 `scripts/sync-audio-durations.py`，用真实 mp3 时长回写 `script.json`，不再靠极端慢速凑时长。
+- `generate-placeholders.py` 改为 storyboard fallback：按 pipeline / graph / layers / loop / risk / dashboard 等类型画结构草图，不再输出纯标题卡。
+- `templates/deck.html` 加 favicon、桌面/移动端防重叠布局，标题上置，字幕区固定安全。
+- `references/image-generators.md` 加入视觉 prompt 结构、禁止项、推荐画面类型和参考来源。
+
 基于原版的针对性优化,5 处改动。
 
 ## 1. assemble-deck.py:修复 title 含反斜杠时崩溃的 bug
@@ -24,7 +42,7 @@ html_out = re.sub(r"<title[^>]*>.*?</title>", f"<title>{title}</title>", ...)
 `str.replace()` 没有任何元字符解释,反斜杠 / `$` / `&` / `\g<0>` 全部当字面量处理。
 
 未替换状态下打开模板,`__DECK_STYLE__` 不匹配任何 `body[data-style="..."]` 选择器,
-会自然 fallback 到 `:root` 默认变量(即 kurzgesagt 风格)——无需额外兜底逻辑。
+会自然 fallback 到 `:root` 默认变量(当前为 editorial-cinematic 风格)——无需额外兜底逻辑。
 
 ## 2. SKILL.md + check-deps.sh:Tavily 软化为可选
 

@@ -47,10 +47,10 @@ def text(value: object) -> str:
 
 
 def safe_style(value: object) -> str:
-    style = str(value or "kurzgesagt")
+    style = str(value or "editorial-cinematic")
     if re.fullmatch(r"[a-z0-9-]+", style):
         return style
-    return "kurzgesagt"
+    return "editorial-cinematic"
 
 
 def source_label(url: str) -> str:

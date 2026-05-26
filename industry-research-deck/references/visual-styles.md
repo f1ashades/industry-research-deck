@@ -2,7 +2,25 @@
 
 每个风格定义：HTML `data-style` 值 + CSS 变量 + 生图 prompt 后缀。
 
-## 1. kurzgesagt（默认）
+## 1. editorial-cinematic（默认）
+
+**HTML**：`<body data-style="editorial-cinematic">`
+
+**视觉特征**：
+- 现代媒体长文/纪录片解释器主视觉
+- off-white / charcoal 基底，cobalt blue、coral、green 作重点，不再单调深蓝
+- 真实纸张、玻璃、贴纸、轻微胶片颗粒与清晰矢量标注混合
+- 35mm editorial framing，前景/中景/背景层次清楚
+- 图像里不放长标题，主要文字交给 HTML 标题和字幕
+
+**生图 prompt 后缀**：
+> "modern editorial cinematic illustration, crisp vector-meets-collage look, realistic paper and glass textures, clean off-white and charcoal base, cobalt blue and coral accents, professional magazine explainer aesthetic, 35mm editorial framing, clear foreground-midground-background, dramatic but natural lighting, high detail, no long text, no title card"
+
+**适合**：默认行业研究、技术解释、人物/公司/趋势讲解。
+
+---
+
+## 2. kurzgesagt（扁平科普）
 
 **HTML**：`<body data-style="kurzgesagt">`
 
@@ -20,7 +38,7 @@
 
 ---
 
-## 2. bloomberg（财经数据风）
+## 3. bloomberg（财经数据风）
 
 **HTML**：`<body data-style="bloomberg">`
 
@@ -37,7 +55,7 @@
 
 ---
 
-## 3. vox（解释性新闻风）
+## 4. vox（解释性新闻风）
 
 **HTML**：`<body data-style="vox">`
 
@@ -54,7 +72,7 @@
 
 ---
 
-## 4. bilibili-hardcore（B 站硬核风）
+## 5. bilibili-hardcore（B 站硬核风）
 
 **HTML**：`<body data-style="bilibili-hardcore">`
 
@@ -72,7 +90,7 @@
 
 ---
 
-## 5. stratechery（学术分析风）
+## 6. stratechery（学术分析风）
 
 **HTML**：`<body data-style="stratechery">`
 
@@ -90,7 +108,7 @@
 
 ---
 
-## 6. apple-keynote（极简风）
+## 7. apple-keynote（极简风）
 
 **HTML**：`<body data-style="apple-keynote">`
 
@@ -122,3 +140,5 @@
 - 数据源标注始终右下角小字
 - 字号梯度：标题 ≥ 48px，正文 ≥ 24px（演讲距离决定）
 - 每段持续 ≥ 12s（再短观众读不完字幕）
+- 图像不要承担长文本；标题、字幕、数据源由 HTML 承担
+- 移动端必须验证标题、图片、字幕、来源不重叠

@@ -37,6 +37,7 @@ edge-tts 用微软 Neural TTS，免费、无 key、300+ voices、50+ 语言。
 
 | 视觉风格 | 推荐 voice |
 |---|---|
+| editorial-cinematic（默认） | XiaoxiaoNeural / YunxiNeural / AriaNeural |
 | kurzgesagt（扁平科普） | XiaoxiaoNeural / GuyNeural |
 | bloomberg（财经数据） | YunxiNeural / RogerNeural |
 | vox（新闻） | YunjianNeural / AriaNeural |
@@ -60,6 +61,11 @@ edge-tts --voice zh-CN-XiaoxiaoNeural --text "..." \
   --rate="+10%" --pitch="-2Hz" \
   --write-media out.mp3
 
+# 负数 rate 推荐写成等号形式，避免被命令行解析成选项
+edge-tts --voice zh-CN-XiaoxiaoNeural --text "..." \
+  --rate=-10% \
+  --write-media out.mp3
+
 # 列出所有 voice
 edge-tts --list-voices | grep zh-CN
 ```
@@ -68,9 +74,9 @@ edge-tts --list-voices | grep zh-CN
 
 | voice | 字 / 秒（默认 rate） |
 |---|---|
-| XiaoxiaoNeural | ~3.8-4.5 字 |
-| YunxiNeural | ~3.5-4.2 字（更慢） |
-| XiaoyiNeural | ~4.2-5.0 字（更快） |
+| XiaoxiaoNeural | ~4.6-5.4 字 |
+| YunxiNeural | ~4.0-4.8 字（更慢） |
+| XiaoyiNeural | ~5.0-5.8 字（更快） |
 | 英文 voices | ~2.0-2.5 词 / 秒 |
 
-产业解释类内容优先保守估算：20 秒配音 ≈ 70-90 中文字 / 40-50 英文词。复杂概念靠近下限，轻松口播可接近上限。
+产业解释类内容优先按自然语速估算：20 秒配音 ≈ 90-110 中文字 / 40-50 英文词，24 秒配音 ≈ 110-130 中文字。不要为了凑时长把中文 TTS 降到 `-20%` 以下；应增删文案后重生音频，并用 `scripts/sync-audio-durations.py` 回写真实时长。

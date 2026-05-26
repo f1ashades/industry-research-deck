@@ -4,22 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>__DECK_TITLE__</title>
+  <link rel="icon" href="data:,">
   <style>
     /* ============ 风格变量 ============
        通过 <body data-style="..."> 切换。每个风格只是一组 CSS 变量。
     */
     :root {
+      --bg: #f7f7f2;
+      --bg-grad: linear-gradient(135deg, #f7f7f2 0%, #ffffff 45%, #dfeaf3 100%);
+      --fg: #10141f;
+      --accent: #f05a3f;
+      --accent-2: #1768ac;
+      --muted: rgba(16, 20, 31, 0.62);
+      --title-font: "Source Han Sans CN", "PingFang SC", "Inter", system-ui, sans-serif;
+      --body-font: var(--title-font);
+      --radius: 14px;
+      --title-size: 64px;
+      --body-size: 24px;
+    }
+    body[data-style="editorial-cinematic"] {
+      --bg: #f7f7f2;
+      --bg-grad: linear-gradient(135deg, #f7f7f2 0%, #ffffff 45%, #dfeaf3 100%);
+      --fg: #10141f;
+      --accent: #f05a3f;
+      --accent-2: #1768ac;
+      --muted: rgba(16, 20, 31, 0.62);
+      --title-font: "Source Han Sans CN", "PingFang SC", "Inter", system-ui, sans-serif;
+      --radius: 14px;
+    }
+    body[data-style="kurzgesagt"] {
       --bg: #1a2540;
       --bg-grad: linear-gradient(135deg, #1a2540 0%, #2c3e80 100%);
       --fg: #ffffff;
       --accent: #ff9c39;
       --accent-2: #46d2ff;
       --muted: rgba(255, 255, 255, 0.65);
-      --title-font: "Source Han Sans CN", "PingFang SC", "Inter", system-ui, sans-serif;
-      --body-font: var(--title-font);
       --radius: 24px;
-      --title-size: 64px;
-      --body-size: 28px;
     }
     body[data-style="bloomberg"] {
       --bg: #0a0e1a;
@@ -100,7 +120,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8vh 10vw 16vh;
+      padding: 5vh 10vw 24vh;
       opacity: 0;
       visibility: hidden;
       transition: opacity 600ms ease, transform 600ms ease;
@@ -113,20 +133,22 @@
     }
     section img {
       max-width: 70%;
-      max-height: 55vh;
+      max-height: 38vh;
       border-radius: var(--radius);
       object-fit: cover;
-      margin-bottom: 4vh;
+      margin-bottom: 0;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
     }
     section h2 {
       font-family: var(--title-font);
-      font-size: var(--title-size);
+      order: -1;
+      font-size: clamp(36px, 4vw, 54px);
       font-weight: 700;
       text-align: center;
-      max-width: 80%;
+      max-width: 76%;
       line-height: 1.2;
-      color: var(--accent);
+      color: var(--fg);
+      margin-bottom: 2vh;
     }
 
     /* ============ 字幕（始终居底）============ */
@@ -135,12 +157,12 @@
       left: 50%;
       transform: translateX(-50%);
       bottom: 10vh;
-      max-width: 80%;
+      max-width: 76%;
       padding: 0.6em 1.2em;
       background: rgba(0, 0, 0, 0.7);
       color: #fff;
       font-size: var(--body-size);
-      line-height: 1.5;
+      line-height: 1.4;
       border-radius: 8px;
       text-align: center;
       z-index: 100;
@@ -219,6 +241,41 @@
       border-radius: 3px;
       font-family: monospace;
       margin: 0 2px;
+    }
+
+    @media (max-width: 700px) {
+      section {
+        padding: 7vh 6vw 31vh;
+      }
+      section img {
+        max-width: 92%;
+        max-height: 30vh;
+      }
+      section h2 {
+        font-size: 26px;
+        max-width: 92%;
+        margin-bottom: 1.5vh;
+      }
+      .subtitle {
+        bottom: 8vh;
+        max-width: 92%;
+        max-height: 28vh;
+        overflow: hidden;
+        padding: 0.75em 1em;
+        font-size: 16px;
+        line-height: 1.45;
+      }
+      .sources {
+        left: 4vw;
+        right: 4vw;
+        bottom: 2vh;
+        max-width: none;
+        text-align: center;
+        font-size: 11px;
+      }
+      .controls {
+        display: none;
+      }
     }
 
     /* ============ Autoplay 兜底提示 ============

@@ -38,15 +38,49 @@
 
 ## Prompt 结构
 
-每段 prompt 保持稳定结构：
+每段 prompt 保持稳定结构。参考 OpenAI Academy 和 Runway 的公开提示词指南：清楚写出用途、主体、动作、场景、风格；需要控制画面时补充构图、光线、颜色、视角；不要只写抽象口号。
 
 ```text
-<视觉风格后缀>
-主题：<deck title>
-段落：<section title>
-画面：<具体主体、动作、空间关系>
-构图：16:9，主体清晰，字幕安全区不要放关键文字
-限制：不要 photorealism，不要水印，不要 UI 截图，不要小字
+目的：为一段浏览器演讲生成 16:9 视觉主图；主要信息由 HTML 标题/字幕承担。
+主体：<具体人物/物体/系统，不要只写“概念”>
+动作：<主体正在做什么，或关系如何变化>
+场景：<地点/背景/空间层级>
+构图：<wide shot / close-up / rule of thirds / centered subject / layered foreground-midground-background>
+镜头与光线：<35mm editorial / overhead / dramatic side light / soft window light / rim light>
+色彩与材质：<固定调色板、纸张/玻璃/胶片颗粒/3D clay 等>
+限制：no long text, no title card, no bullet list, no watermark, no logo, keep lower 25% visually quiet for subtitles
 ```
 
-LLM 可以自由发挥画面隐喻，但不要省略主体、构图和限制条件。
+LLM 可以自由发挥画面隐喻，但不要省略主体、动作、构图和光线。
+
+## 禁止的低质量图
+
+- 纯标题卡：一大段中文标题居中，几何背景，基本没有信息。
+- PPT 套娃：图里又出现一张幻灯片、长段文字、项目符号。
+- 抽象空洞：只有光球、渐变、云雾、装饰线条，看不出段落机制。
+- 错误信息图：密集小字、复杂流程图、不可读标签。复杂信息应由 HTML 字幕/来源区承载。
+
+## 推荐画面类型
+
+- **机制图**：少量实体 + 箭头 + 空间层级，例如“资料 → LLM → Wiki”。
+- **隐喻场景**：把抽象过程变成真实动作，例如“研究员把文件投进编译机，输出会发光的知识地图”。
+- **关系网络**：节点和连线，但只保留 5-9 个核心节点。
+- **对比画面**：左旧方法、右新方法，视觉差异清楚。
+- **风险画面**：错误信息被审查护栏拦住，适合讲限制和争议。
+
+## 默认风格：editorial-cinematic
+
+用于行业研究和技术解释的默认风格，目标是“像一张现代媒体长文的主视觉”，不是儿童科普标题卡。
+
+Prompt 后缀：
+
+```text
+modern editorial cinematic illustration, crisp vector-meets-collage look, realistic paper and glass textures, clean off-white and charcoal base, cobalt blue and coral accents, professional magazine explainer aesthetic, 35mm editorial framing, clear foreground-midground-background, dramatic but natural lighting, high detail, no long text, no title card
+```
+
+## 资料来源
+
+- OpenAI Academy: https://openai.com/academy/image-generation/
+- Runway Gen-4 Image Prompting Guide: https://help.runwayml.com/hc/en-us/articles/35694045317139-Gen-4-Image-Prompting-Guide
+- Runway text-to-image guide: https://runwayml.com/resources/how-to-make-an-ai-image-with-text-prompt
+- Runway image styles guide: https://runwayml.com/resources/ai-image-styles

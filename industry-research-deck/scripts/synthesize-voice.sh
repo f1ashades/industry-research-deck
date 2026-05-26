@@ -20,11 +20,17 @@ PITCH="+0Hz"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --voice)    VOICE="$2"; shift 2 ;;
+    --voice=*)  VOICE="${1#*=}"; shift ;;
     --text)     TEXT="$2"; shift 2 ;;
+    --text=*)   TEXT="${1#*=}"; shift ;;
     --out-dir)  OUT_DIR="$2"; shift 2 ;;
+    --out-dir=*) OUT_DIR="${1#*=}"; shift ;;
     --id)       ID="$2"; shift 2 ;;
+    --id=*)     ID="${1#*=}"; shift ;;
     --rate)     RATE="$2"; shift 2 ;;
+    --rate=*)   RATE="${1#*=}"; shift ;;
     --pitch)    PITCH="$2"; shift 2 ;;
+    --pitch=*)  PITCH="${1#*=}"; shift ;;
     *) echo "未知参数: $1" >&2; exit 1 ;;
   esac
 done
@@ -42,8 +48,8 @@ until [[ "$tries" -ge 3 ]]; do
   if edge-tts \
       --voice "$VOICE" \
       --text "$TEXT" \
-      --rate "$RATE" \
-      --pitch "$PITCH" \
+      "--rate=$RATE" \
+      "--pitch=$PITCH" \
       --write-media "$MP3" \
       --write-subtitles "$VTT"; then
     # 报告时长 + 字数
