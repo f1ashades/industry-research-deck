@@ -1,0 +1,7 @@
+interface:
+  display_name: "Industry Research Deck"
+  short_description: "Turn research topics into playable HTML talks"
+  default_prompt: "Use $industry-research-deck to make a short research talk about this topic."
+
+policy:
+  allow_implicit_invocation: true

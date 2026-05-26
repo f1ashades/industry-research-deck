@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>__DECK_TITLE__</title>
+  <style>
+    /* ============ 风格变量 ============
+       通过 <body data-style="..."> 切换。每个风格只是一组 CSS 变量。
+    */
+    :root {
+      --bg: #1a2540;
+      --bg-grad: linear-gradient(135deg, #1a2540 0%, #2c3e80 100%);
+      --fg: #ffffff;
+      --accent: #ff9c39;
+      --accent-2: #46d2ff;
+      --muted: rgba(255, 255, 255, 0.65);
+      --title-font: "Source Han Sans CN", "PingFang SC", "Inter", system-ui, sans-serif;
+      --body-font: var(--title-font);
+      --radius: 24px;
+      --title-size: 64px;
+      --body-size: 28px;
+    }
+    body[data-style="bloomberg"] {
+      --bg: #0a0e1a;
+      --bg-grad: #0a0e1a;
+      --fg: #ffffff;
+      --accent: #00d96a;
+      --accent-2: #ff3a3a;
+      --muted: rgba(255, 255, 255, 0.55);
+      --title-font: "Source Han Serif CN", "Roboto Slab", Georgia, serif;
+      --radius: 4px;
+    }
+    body[data-style="vox"] {
+      --bg: #faf8f3;
+      --bg-grad: #faf8f3;
+      --fg: #1a1a1a;
+      --accent: #e63946;
+      --accent-2: #ffd60a;
+      --muted: #666;
+      --title-font: "Source Han Sans CN", "Helvetica Neue", sans-serif;
+      --radius: 0px;
+    }
+    body[data-style="bilibili-hardcore"] {
+      --bg: #0d0014;
+      --bg-grad: radial-gradient(ellipse at top, #1a0028 0%, #0d0014 70%);
+      --fg: #ffffff;
+      --accent: #00f0ff;
+      --accent-2: #ff2bd6;
+      --muted: rgba(255, 247, 0, 0.6);
+      --title-font: "Source Han Sans CN", "Inter", sans-serif;
+      --radius: 8px;
+    }
+    body[data-style="stratechery"] {
+      --bg: #faf8f3;
+      --bg-grad: #faf8f3;
+      --fg: #1a1a1a;
+      --accent: #2c3e50;
+      --accent-2: #8b3a3a;
+      --muted: #888;
+      --title-font: "Source Han Serif CN", Georgia, serif;
+      --radius: 0px;
+    }
+    body[data-style="apple-keynote"] {
+      --bg: #ffffff;
+      --bg-grad: #ffffff;
+      --fg: #000000;
+      --accent: #0071e3;
+      --accent-2: #ff3b30;
+      --muted: #888;
+      --title-font: "PingFang SC", -apple-system, sans-serif;
+      --radius: 16px;
+      --title-size: 96px;
+    }
+
+    /* ============ 通用布局 ============ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg-grad);
+      color: var(--fg);
+      font-family: var(--body-font);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============ 单段 section ============ */
+    .stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    section {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8vh 10vw 16vh;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 600ms ease, transform 600ms ease;
+      transform: translateY(20px);
+    }
+    section.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    section img {
+      max-width: 70%;
+      max-height: 55vh;
+      border-radius: var(--radius);
+      object-fit: cover;
+      margin-bottom: 4vh;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+    section h2 {
+      font-family: var(--title-font);
+      font-size: var(--title-size);
+      font-weight: 700;
+      text-align: center;
+      max-width: 80%;
+      line-height: 1.2;
+      color: var(--accent);
+    }
+
+    /* ============ 字幕（始终居底）============ */
+    .subtitle {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 10vh;
+      max-width: 80%;
+      padding: 0.6em 1.2em;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: var(--body-size);
+      line-height: 1.5;
+      border-radius: 8px;
+      text-align: center;
+      z-index: 100;
+      pointer-events: none;
+    }
+    body[data-style="vox"] .subtitle,
+    body[data-style="stratechery"] .subtitle,
+    body[data-style="apple-keynote"] .subtitle {
+      background: rgba(0, 0, 0, 0.85);
+    }
+
+    /* ============ 数据源（右下角）============ */
+    .sources {
+      position: fixed;
+      right: 2vw;
+      bottom: 2vh;
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 40vw;
+      text-align: right;
+      z-index: 50;
+    }
+    .sources a {
+      color: var(--accent-2);
+      text-decoration: none;
+      margin-left: 0.5em;
+    }
+    .sources a:hover { text-decoration: underline; }
+
+    /* ============ 进度条 + 段落指示 ============ */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: var(--accent);
+      width: 0%;
+      transition: width 200ms linear;
+      z-index: 200;
+    }
+    .nav-dots {
+      position: fixed;
+      top: 2vh;
+      right: 2vw;
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+    }
+    .nav-dots .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      opacity: 0.4;
+      transition: opacity 200ms;
+      cursor: pointer;
+    }
+    .nav-dots .dot.active {
+      background: var(--accent);
+      opacity: 1;
+    }
+
+    /* ============ 控制提示 ============ */
+    .controls {
+      position: fixed;
+      bottom: 2vh;
+      left: 2vw;
+      font-size: 12px;
+      color: var(--muted);
+      z-index: 50;
+    }
+    .controls kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      font-family: monospace;
+      margin: 0 2px;
+    }
+
+    /* ============ Autoplay 兜底提示 ============
+       浏览器策略拒绝自动播放音频时显示；首次成功播放后隐藏。
+    */
+    .autoplay-hint {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      cursor: pointer;
+      font-size: 28px;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+    .autoplay-hint.show { display: flex; }
+    .autoplay-hint .icon {
+      display: inline-block;
+      width: 0.9em;
+      height: 0.9em;
+      margin-right: 0.4em;
+      border-radius: 50%;
+      background: var(--accent);
+      position: relative;
+      vertical-align: -0.05em;
+    }
+    .autoplay-hint .icon::after {
+      content: '';
+      position: absolute;
+      left: 38%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 0.32em solid #fff;
+      border-top: 0.22em solid transparent;
+      border-bottom: 0.22em solid transparent;
+    }
+  </style>
+</head>
+<body data-style="__DECK_STYLE__">
+
+  <div class="progress" id="progress"></div>
+  <div class="nav-dots" id="navDots"></div>
+
+  <main class="stage" id="stage">
+    <!-- ============ Sections（由 skill 注入）============
+      template:
+      <section data-id="sec-1" data-duration="20"
+               data-audio="assets/audio/sec-1.mp3"
+               data-subtitle="assets/subtitle/sec-1.vtt"
+               data-sources='[{"label":"新华网","url":"https://..."}]'>
+        <img src="assets/img/sec-1.png" alt="...">
+        <h2>段落标题</h2>
+      </section>
+    -->
+    <!-- DECK_SECTIONS -->
+  </main>
+
+  <div class="subtitle" id="subtitle"></div>
+  <div class="sources" id="sources"></div>
+  <div class="controls">
+    <kbd>Space</kbd> 播放/暂停 ·
+    <kbd>←</kbd> <kbd>→</kbd> 切段 ·
+    <kbd>R</kbd> 重播本段 ·
+    <kbd>Esc</kbd> 退出
+  </div>
+
+  <audio id="audio" preload="auto"></audio>
+
+  <div class="autoplay-hint" id="autoplayHint">
+    <span><span class="icon"></span>点击或按空格开始播放</span>
+  </div>
+
+  <script>
+    /* ============ 播放控制 ============ */
+    const sections = Array.from(document.querySelectorAll('section'));
+    const audio = document.getElementById('audio');
+    const subtitleEl = document.getElementById('subtitle');
+    const sourcesEl = document.getElementById('sources');
+    const progressEl = document.getElementById('progress');
+    const navDotsEl = document.getElementById('navDots');
+    const autoplayHint = document.getElementById('autoplayHint');
+
+    let current = 0;
+    let cues = [];
+    let staticNarration = '';   // VTT 失败时的兜底文本
+    let playToken = 0;           // 切段防竞态:旧的异步流程作废
+    let totalDuration = sections.reduce((a, s) => a + Number(s.dataset.duration || 20), 0);
+    let elapsedBeforeCurrent = 0;
+
+    // 渲染 nav dots
+    sections.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.addEventListener('click', () => goTo(i));
+      navDotsEl.appendChild(dot);
+    });
+
+    function goTo(idx) {
+      if (idx < 0 || idx >= sections.length) return;
+      sections[current].classList.remove('active');
+      current = idx;
+      sections[current].classList.add('active');
+      navDotsEl.querySelectorAll('.dot').forEach((d, i) =>
+        d.classList.toggle('active', i === current));
+
+      elapsedBeforeCurrent = sections.slice(0, current)
+        .reduce((a, s) => a + Number(s.dataset.duration || 20), 0);
+
+      const sec = sections[current];
+      renderSources(sec);
+      playAudio(sec);
+    }
+
+    function renderSources(sec) {
+      const sourcesAttr = sec.dataset.sources;
+      sourcesEl.replaceChildren();
+      if (!sourcesAttr) return;
+      try {
+        const list = JSON.parse(sourcesAttr);
+        if (!Array.isArray(list) || list.length === 0) return;
+        sourcesEl.append(document.createTextNode('数据来源：'));
+        list.forEach((s, i) => {
+          if (i > 0) sourcesEl.append(document.createTextNode(' · '));
+          const a = document.createElement('a');
+          a.href = s.url || '#';
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = s.label || 'source';
+          sourcesEl.append(a);
+        });
+      } catch (e) { sourcesEl.replaceChildren(); }
+    }
+
+    async function playAudio(sec) {
+      // 防竞态:用户快速 → 键时,旧的 loadVTT/play 还没回来就被新一轮覆盖
+      const token = ++playToken;
+
+      // 先停掉旧 audio,避免旧 timeupdate 触发到新 section 上
+      try { audio.pause(); } catch (e) {}
+
+      const audioSrc = sec.dataset.audio;
+      const subSrc = sec.dataset.subtitle;
+      staticNarration = sec.dataset.narration || '';
+
+      // 先把 narration 显示出来作为静态字幕;VTT 加载成功后会被 timeupdate 覆盖
+      subtitleEl.textContent = staticNarration;
+      cues = [];
+
+      if (subSrc) {
+        const loadedCues = await loadVTT(subSrc);
+        if (token !== playToken) return;       // 已被下一段抢占
+        cues = loadedCues;
+      }
+
+      if (audioSrc) {
+        audio.src = audioSrc;
+        try {
+          await audio.play();
+          if (token === playToken) hideAutoplayHint();
+        } catch (e) {
+          // NotAllowedError 等 —— 浏览器策略要求用户手势
+          if (token === playToken) showAutoplayHint();
+        }
+      }
+    }
+
+    function showAutoplayHint() { autoplayHint.classList.add('show'); }
+    function hideAutoplayHint() { autoplayHint.classList.remove('show'); }
+
+    autoplayHint.addEventListener('click', () => {
+      hideAutoplayHint();
+      audio.play().catch(() => {});
+    });
+
+    async function loadVTT(url) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return [];
+        const text = await res.text();
+        return parseVTT(text);
+      } catch (e) { return []; }
+    }
+
+    function parseVTT(text) {
+      const out = [];
+      const re = /(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*\n([\s\S]*?)(?=\n\n|\n*$)/g;
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        const start = (+m[1]) * 3600 + (+m[2]) * 60 + (+m[3]) + (+m[4]) / 1000;
+        const end = (+m[5]) * 3600 + (+m[6]) * 60 + (+m[7]) + (+m[8]) / 1000;
+        const txt = m[9].trim();
+        out.push({ start, end, txt });
+      }
+      return out;
+    }
+
+    audio.addEventListener('timeupdate', () => {
+      const t = audio.currentTime;
+      if (cues.length > 0) {
+        const cue = cues.find(c => t >= c.start && t <= c.end);
+        // 有 VTT:按时间段切;cue 之间的空隙保持 narration 兜底,而不是闪一下空白
+        subtitleEl.textContent = cue ? cue.txt : staticNarration;
+      }
+      // 没有 cues 时维持 staticNarration(playAudio 已经设好)
+
+      const elapsed = elapsedBeforeCurrent + t;
+      progressEl.style.width = (elapsed / totalDuration * 100) + '%';
+    });
+
+    audio.addEventListener('ended', () => {
+      if (current < sections.length - 1) goTo(current + 1);
+    });
+
+    audio.addEventListener('playing', hideAutoplayHint);
+
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (autoplayHint.classList.contains('show')) {
+          hideAutoplayHint();
+          audio.play().catch(() => {});
+        } else {
+          audio.paused ? audio.play() : audio.pause();
+        }
+      }
+      else if (e.code === 'ArrowRight') goTo(current + 1);
+      else if (e.code === 'ArrowLeft') goTo(current - 1);
+      else if (e.code === 'KeyR') { audio.currentTime = 0; audio.play(); }
+      else if (e.code === 'Escape') window.close();
+    });
+
+    // 初始化第一段
+    if (sections.length > 0) {
+      sections[0].classList.add('active');
+      navDotsEl.firstChild.classList.add('active');
+      renderSources(sections[0]);
+      playAudio(sections[0]);
+    }
+  </script>
+
+</body>
+</html>
