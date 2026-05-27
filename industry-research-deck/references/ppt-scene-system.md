@@ -1,6 +1,6 @@
 # PPT Scene System
 
-这个文件描述 **SVG fallback** 路线：文字、卡片、箭头、流程、指标和表格由 HTML/SVG 程序化渲染。当前 skill 的主路径是 imagegen/image-2 生图；当没有生图能力、用户明确不要生图、或生图连续出现错字/版式错误时，再切到这里。
+这个文件描述 **SVG fallback** 路线：文字、卡片、箭头、流程、指标和表格由 HTML/SVG 程序化渲染。当前 skill 的主路径是 agent-native 生图；当没有可用生图能力、用户明确不要生图、或生图连续出现错字/版式错误时，再切到这里。
 
 ## 借鉴边界
 
@@ -11,7 +11,7 @@
 ## Fallback 流水线
 
 1. LLM 写 `script.json`，每段包含 narration 和 `visual` 结构化对象。
-2. 如果 imagegen/image-2 不可用或连续失败，运行 `scripts/generate-slide-scenes.py` 生成 `deck/assets/img/sec-N.svg`。
+2. 如果 agent-native 生图能力和 adapter 都不可用，或生图连续失败，运行 `scripts/generate-slide-scenes.py` 生成 `deck/assets/img/sec-N.svg`。
 3. 如果有生图能力，优先用 `image_prompt` 生成 `sec-N.png`，`visual` 只作为 prompt blueprint 和 fallback scaffold。
 4. 运行 `scripts/assemble-deck.py` 组装 HTML。含 `visual` 的段落会自动标记 `data-visual-mode="slide-scene"`，标题由 SVG scene 承载，避免重复。
 5. 预览后用浏览器检查：scene 覆盖全屏、字幕可读、没有文字裁切或卡片重叠。

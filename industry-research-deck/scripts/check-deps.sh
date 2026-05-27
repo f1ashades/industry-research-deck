@@ -60,8 +60,8 @@ echo
 printf "${BOLD}生图能力${RESET}\n"
 g_ok=0
 
-printf "  ${YELLOW}!${RESET} Shell 无法可靠检测当前 agent 是否有内置生图工具\n"
-printf "    ${CYAN}规则:${RESET} 若当前 agent 提供 image generation，直接用；否则看下面 adapter 或生成占位图。\n"
+printf "  ${YELLOW}!${RESET} Shell 无法可靠检测当前 agent 是否有 agent-native 生图能力\n"
+printf "    ${CYAN}规则:${RESET} 若当前 agent 自判能生成/编辑位图并保存到工作区，直接用；否则看下面 adapter 或 SVG fallback。\n"
 
 [[ -n "${OPENAI_API_KEY:-}" ]] && {
   printf "  ${GREEN}✓${RESET} OPENAI_API_KEY 已设置（可用 gpt-image-2 API）\n"; g_ok=$((g_ok + 1));
@@ -72,7 +72,7 @@ printf "    ${CYAN}规则:${RESET} 若当前 agent 提供 image generation，直
 
 if [[ "$g_ok" -eq 0 ]]; then
   printf "  ${YELLOW}!${RESET} 未检测到 API adapter 凭证\n"
-  printf "    ${CYAN}fallback:${RESET} 若当前 agent 也没有内置生图，运行 scripts/generate-placeholders.py 先生成占位图。\n"
+  printf "    ${CYAN}fallback:${RESET} 若当前 agent 也没有可用生图能力，运行 scripts/generate-slide-scenes.py 生成 SVG scene。\n"
 fi
 
 echo

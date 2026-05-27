@@ -1,17 +1,30 @@
 # 生图能力与 adapter 约定
 
-这个 skill 只要求“能为每段得到一张视觉图”，不把工作流绑定到某个供应商。**当前 agent 能生图时，生图是主路径**；没有时再考虑 adapter；仍没有或连续失败时，用结构化 SVG scene 兜底。
+这个 skill 只要求“能为每段得到一张视觉图”，不把工作流绑定到某个供应商或具体工具名。**当前 agent 自判能生图时，生图是主路径**；没有时再考虑 adapter；仍没有或连续失败时，用结构化 SVG scene 兜底。
 
 用户反馈过：新版 image-2 已经能做出高质量中文 PPT/生态图风格主视觉。之前 skill 生图效果差，主要不是模型能力问题，而是工作流问题：prompt 太抽象、没有固定文字清单、没有明确版式、没有参考图保持风格、没有生成后纠错迭代，还把 fallback SVG 当成默认主路径。
 
 ## 选择顺序
 
-1. **Agent 内置生图能力**：如果当前运行环境提供 image generation tool，直接用它生成 `deck/assets/img/sec-{N}.png`。这是 Codex/ChatGPT 类环境的首选路径，不要求用户配置 API key。
+1. **Agent-native 生图能力**：如果当前运行环境提供任何可由 agent 调用的生图/修图能力，直接用它生成 `deck/assets/img/sec-{N}.png`。这可以是工具、skill、插件、MCP、IDE 内置能力或产品原生图片能力；不要限定为某个名字。
 2. **OpenAI API adapter**：如果用户已经设置 `OPENAI_API_KEY`，可调用 `scripts/generators/openai-api.sh`。这是跨 agent 环境的通用付费路径。
 3. **Gemini adapter**：如果用户已经设置 `GEMINI_API_KEY`，可调用 `scripts/generators/nano-banana.sh`。这是可选实验路径。
 4. **Structured SVG fallback**：没有任何生图能力、或生图连续失败时，运行 `scripts/generate-slide-scenes.py --script deck/script/script.json --out-dir deck/assets/img` 生成 SVG scene，然后继续组装 HTML。
 
 不要把未内置的后端写成当前能力。即梦、文心、其他国内模型可以以后按下面接口新增 adapter，但当前 skill 不承诺已经支持。
+
+## Agent-native 生图判断
+
+执行 skill 的 agent 必须自己判断当前会话是否“能生图”。不要只检查 `image_gen`、`$imagegen` 这样的特定名称；它们只是 Codex/ChatGPT 环境里的例子。满足下面条件即可视为可生图：
+
+1. 当前会话有可由 agent 直接调用的工具 / skill / plugin / MCP / IDE 能力，能根据文本 prompt 或参考图生成、编辑位图。
+2. 生成结果能落盘到当前工作区，最终路径必须是 `deck/assets/img/sec-{N}.png` 或同目录下可被 `assemble-deck.py` 识别的图片。
+3. 不需要用户手工去网页下载、截图、复制附件；如果只能得到临时 URL 或聊天附件，agent 必须把它保存为项目文件后才算成功。
+4. 当前能力允许至少一次检查和定向重生/编辑。无法检查、明显错字、主体没有占满画面时，不要硬用。
+
+模型名称本身不等于生图能力。比如某个 IDE 里用了更新的 GPT 文本模型，但没有开放图片工具或图片 API，对本 skill 来说仍然是“无 agent-native 生图”，应继续看 adapter；反过来，非 OpenAI agent 只要暴露了可保存位图的图片工具，也应该走生图主路径。
+
+执行时建议在最终报告里写清楚 `visual_backend`：`agent-native` / `openai-api` / `gemini` / `svg-fallback`。
 
 ## Adapter 接口
 

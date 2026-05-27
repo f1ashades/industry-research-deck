@@ -1,11 +1,11 @@
 # 视觉工作流规则
 
-这个 skill 的画面默认按“讲解视频 scene”处理，而不是把一张小插图贴进幻灯片。参考社区里更稳定的做法：Slidev / Marp / reveal.js 用 slide-as-code 把内容、布局和主题分离，Presenton / PreGenie 把生成、模板和导出拆成阶段，Remotion 用 React 组件分层合成视频，Manim / Motion Canvas 用代码精确描述动画/图形。落到本 skill，就是先产出结构化视觉分镜；如果当前 agent 能生图，就用 imagegen/image-2 生成高质量主视觉；否则才用 SVG scene fallback。
+这个 skill 的画面默认按“讲解视频 scene”处理，而不是把一张小插图贴进幻灯片。参考社区里更稳定的做法：Slidev / Marp / reveal.js 用 slide-as-code 把内容、布局和主题分离，Presenton / PreGenie 把生成、模板和导出拆成阶段，Remotion 用 React 组件分层合成视频，Manim / Motion Canvas 用代码精确描述动画/图形。落到本 skill，就是先产出结构化视觉分镜；如果当前 agent 自判具备可用生图能力，就生成高质量主视觉；否则才用 SVG scene fallback。
 
 ## 原则
 
 1. **整页画布优先**：每段图像是 16:9 full-bleed scene，覆盖整个页面。不要生成小卡片、小 PPT、插在标题下面的小图。
-2. **生图优先**：当前有 imagegen/image-2 时，优先生成 `sec-N.png`。`visual` schema 用来帮助写 prompt 和兜底，不是默认输出。
+2. **生图优先**：当前 agent 能用任意工具、skill、插件、MCP 或 IDE 能力生成并保存位图时，优先生成 `sec-N.png`。`visual` schema 用来帮助写 prompt 和兜底，不是默认输出。
 3. **scene spec 优先于口号**：`image_prompt` 必须描述文字清单、版式、主体、空间关系、镜头、光线、色彩、字幕安全区。只写“高质量、科技感、对比图”不合格。
 4. **复杂关系先结构化再生图**：流程、因果、架构、生态关系，先用 schema 写清楚，再转成 image prompt；不要让模型自由发明密集小字。
 5. **字幕安全区**：画面下方 28%-32% 保持视觉相对安静，字幕由 HTML 叠加，不让图像模型生成长文本。
