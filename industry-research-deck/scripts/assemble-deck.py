@@ -99,14 +99,26 @@ def build_section(deck_dir: Path, asset_prefix: str, section: dict, index: int) 
     img = image_path(deck_dir, asset_prefix, {**section, "id": section_id})
     audio = section.get("audio") or f"{asset_prefix}/audio/{section_id}.mp3"
     subtitle = section.get("subtitle") or f"{asset_prefix}/subtitle/{section_id}.vtt"
+    visual = section.get("visual")
+    visual_mode = section.get("visual_mode")
+    if isinstance(visual, dict):
+        visual_mode = visual.get("mode") or "slide-scene"
+    if visual_mode:
+        visual_mode = safe_style(visual_mode)
+
+    attrs = [
+        f'    <section data-id="{attr(section_id)}" data-duration="{attr(duration)}"',
+        f'             data-audio="{attr(audio)}"',
+        f'             data-subtitle="{attr(subtitle)}"',
+        f'             data-narration="{attr(narration)}"',
+    ]
+    if visual_mode:
+        attrs.append(f'             data-visual-mode="{attr(visual_mode)}"')
+    attrs.append(f"             data-sources='{attr(sources_json)}'>")
 
     return "\n".join(
-        [
-            f'    <section data-id="{attr(section_id)}" data-duration="{attr(duration)}"',
-            f'             data-audio="{attr(audio)}"',
-            f'             data-subtitle="{attr(subtitle)}"',
-            f'             data-narration="{attr(narration)}"',
-            f"             data-sources='{attr(sources_json)}'>",
+        attrs
+        + [
             f'      <img src="{attr(img)}" alt="{attr(title)}">',
             f"      <h2>{text(title)}</h2>",
             "    </section>",

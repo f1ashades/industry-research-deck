@@ -195,6 +195,13 @@
       text-wrap: balance;
       text-shadow: var(--title-shadow);
     }
+    section[data-visual-mode="slide-scene"] h2 {
+      display: none;
+    }
+    section[data-visual-mode="slide-scene"]::before {
+      background:
+        linear-gradient(0deg, rgba(0, 0, 0, 0.54) 0%, rgba(0, 0, 0, 0.16) 22%, rgba(0, 0, 0, 0) 44%);
+    }
 
     /* ============ 字幕（始终居底）============ */
     .subtitle {
