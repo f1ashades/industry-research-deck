@@ -1,18 +1,18 @@
 # PPT Scene System
 
-这个 skill 默认采用“结构化 PPT scene”路线：文字、卡片、箭头、流程、指标和表格由 HTML/SVG 程序化渲染；生图只作为背景/插画/素材补充。这样比“让图像模型生成一整页带字的图”更稳定，也更接近优秀讲解视频里的 PPT 质感。
+这个文件描述 **SVG fallback** 路线：文字、卡片、箭头、流程、指标和表格由 HTML/SVG 程序化渲染。当前 skill 的主路径是 imagegen/image-2 生图；当没有生图能力、用户明确不要生图、或生图连续出现错字/版式错误时，再切到这里。
 
 ## 借鉴边界
 
-- **可直接借鉴思路**：HTMLSlides 的组件库、make-slide 的主题参考、Presenton 的 schema + template 工作流、Slidev/Marp 的内容与样式分离、Remotion/Motion Canvas 的 scene/timeline 思维。
+- **可直接借鉴思路**：HTMLSlides 的组件库、make-slide 的主题参考、Presenton 的 schema + template 工作流、Slidev/Marp 的内容与样式分离、Remotion/Motion Canvas 的 scene/timeline 思维。生图路径也要借鉴这些项目的“先 schema、再版式”的思想。
 - **不要直接内置重项目**：不要把 Presenton、Slidev、Remotion、Motion Canvas 当成本 skill 的硬依赖；它们会增加安装成本。只有用户明确要 PPTX/MP4/复杂动画时再接入。
 - **不要复制整套社区代码**：可以采用 MIT/Apache 项目的设计思想和小型模式，但本 skill 的默认产物必须保持本地、轻量、可审查。
 
-## 默认流水线
+## Fallback 流水线
 
 1. LLM 写 `script.json`，每段包含 narration 和 `visual` 结构化对象。
-2. 运行 `scripts/generate-slide-scenes.py` 生成 `deck/assets/img/sec-N.svg`。
-3. 需要照片/产品图时，再额外用 image generation 或 web image 作为 `visual.asset`/背景素材；不要让图片模型承载长文字。
+2. 如果 imagegen/image-2 不可用或连续失败，运行 `scripts/generate-slide-scenes.py` 生成 `deck/assets/img/sec-N.svg`。
+3. 如果有生图能力，优先用 `image_prompt` 生成 `sec-N.png`，`visual` 只作为 prompt blueprint 和 fallback scaffold。
 4. 运行 `scripts/assemble-deck.py` 组装 HTML。含 `visual` 的段落会自动标记 `data-visual-mode="slide-scene"`，标题由 SVG scene 承载，避免重复。
 5. 预览后用浏览器检查：scene 覆盖全屏、字幕可读、没有文字裁切或卡片重叠。
 
