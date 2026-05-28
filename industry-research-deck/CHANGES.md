@@ -1,5 +1,20 @@
 # 改动说明(v2)
 
+## 7. 2026-05-28:支持 Pi gpt-image-2 生图路径
+
+### 原痛点
+
+- Pi 环境已安装 `gpt-image-2` skill，但 `industry-research-deck` 只提示“Shell 无法可靠检测 agent-native 生图能力”，容易误判并直接走 SVG fallback。
+- `gpt-image-2` 依赖新版 Codex CLI 的 `codex exec --enable image_generation`；旧版 Codex 报错时缺少明确升级提示。
+- 缺少符合本 skill generator 统一接口的 gpt-image-2 adapter。
+
+### 改后
+
+- `check-deps.sh` 检测 `~/.pi/agent/skills/gpt-image-2/scripts/gen.sh` 和 Codex CLI `--enable <FEATURE>` 支持，明确报告 “gpt-image-2 skill 可用”。
+- 新增 `scripts/generators/gpt-image-2.sh`，接口兼容 `--prompt / --out / --ref / --size`，内部调用 Pi 的 `gpt-image-2` skill 生成 PNG。
+- `SKILL.md` 和 `references/image-generators.md` 明确：Pi 环境可优先走 gpt-image-2 skill，优先级高于 SVG fallback。
+- 当 Codex CLI 过旧或未安装时，提示 `npm install -g @openai/codex@latest && codex login`。
+
 ## 6. 2026-05-27:语速、视觉和预览质量修正
 
 ### 原痛点

@@ -7,9 +7,10 @@
 ## 选择顺序
 
 1. **Agent-native 生图能力**：如果当前运行环境提供任何可由 agent 调用的生图/修图能力，直接用它生成 `deck/assets/img/sec-{N}.png`。这可以是工具、skill、插件、MCP、IDE 内置能力或产品原生图片能力；不要限定为某个名字。
-2. **OpenAI API adapter**：如果用户已经设置 `OPENAI_API_KEY`，可调用 `scripts/generators/openai-api.sh`。这是跨 agent 环境的通用付费路径。
-3. **Gemini adapter**：如果用户已经设置 `GEMINI_API_KEY`，可调用 `scripts/generators/nano-banana.sh`。这是可选实验路径。
-4. **Structured SVG fallback**：没有任何生图能力、或生图连续失败时，运行 `scripts/generate-slide-scenes.py --script deck/script/script.json --out-dir deck/assets/img` 生成 SVG scene，然后继续组装 HTML。
+2. **Pi gpt-image-2 skill**：如果 `~/.pi/agent/skills/gpt-image-2/scripts/gen.sh` 存在，且 `codex` CLI 支持 `--enable image_generation`，可调用 `scripts/generators/gpt-image-2.sh` 生成 `deck/assets/img/sec-{N}.png`；这是当前 Pi 环境里常见的 agent-native 路径。
+3. **OpenAI API adapter**：如果用户已经设置 `OPENAI_API_KEY`，可调用 `scripts/generators/openai-api.sh`。这是跨 agent 环境的通用付费路径。
+4. **Gemini adapter**：如果用户已经设置 `GEMINI_API_KEY`，可调用 `scripts/generators/nano-banana.sh`。这是可选实验路径。
+5. **Structured SVG fallback**：没有任何生图能力、或生图连续失败时，运行 `scripts/generate-slide-scenes.py --script deck/script/script.json --out-dir deck/assets/img` 生成 SVG scene，然后继续组装 HTML。
 
 不要把未内置的后端写成当前能力。即梦、文心、其他国内模型可以以后按下面接口新增 adapter，但当前 skill 不承诺已经支持。
 

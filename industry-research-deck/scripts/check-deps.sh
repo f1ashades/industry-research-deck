@@ -63,6 +63,20 @@ g_ok=0
 printf "  ${YELLOW}!${RESET} Shell 无法可靠检测当前 agent 是否有 agent-native 生图能力\n"
 printf "    ${CYAN}规则:${RESET} 若当前 agent 自判能生成/编辑位图并保存到工作区，直接用；否则看下面 adapter 或 SVG fallback。\n"
 
+GPT_IMAGE_2_GEN="${GPT_IMAGE_2_GEN:-$HOME/.pi/agent/skills/gpt-image-2/scripts/gen.sh}"
+if [[ -x "$GPT_IMAGE_2_GEN" ]]; then
+  if command -v codex >/dev/null 2>&1 && codex exec --help 2>/dev/null | grep -q -- '--enable <FEATURE>'; then
+    printf "  ${GREEN}✓${RESET} gpt-image-2 skill 可用（ChatGPT/Codex 生图）\n"
+    g_ok=$((g_ok + 1))
+  elif command -v codex >/dev/null 2>&1; then
+    printf "  ${YELLOW}!${RESET} 检测到 gpt-image-2 skill，但 Codex CLI 版本不支持 image_generation flag\n"
+    printf "    ${CYAN}升级:${RESET} npm install -g @openai/codex@latest ；然后确认 codex --version\n"
+  else
+    printf "  ${YELLOW}!${RESET} 检测到 gpt-image-2 skill，但缺 codex CLI\n"
+    printf "    ${CYAN}安装:${RESET} npm install -g @openai/codex@latest && codex login\n"
+  fi
+fi
+
 [[ -n "${OPENAI_API_KEY:-}" ]] && {
   printf "  ${GREEN}✓${RESET} OPENAI_API_KEY 已设置（可用 gpt-image-2 API）\n"; g_ok=$((g_ok + 1));
 }
