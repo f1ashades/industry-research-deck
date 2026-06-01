@@ -40,6 +40,7 @@ printf "${BOLD}核心工具${RESET}\n"
 check_required "edge-tts" "command -v edge-tts" "uv tool install edge-tts  (或 pip install --user edge-tts)"
 check_required "python3" "command -v python3" "macOS 自带；Linux 用包管理器"
 check_optional "ffprobe（用于精确检查音频时长）" "command -v ffprobe" "brew install ffmpeg  /  apt install ffmpeg"
+check_optional "Pillow（check-visual.py 生图机械校验）" "python3 -c 'import PIL'" "pip install --user pillow  （缺失时 check-visual 退化为只查比例/SVG，不阻塞）"
 
 echo
 printf "${BOLD}联网搜索能力（三选一）${RESET}\n"
@@ -60,8 +61,9 @@ echo
 printf "${BOLD}生图能力${RESET}\n"
 g_ok=0
 
-printf "  ${YELLOW}!${RESET} Shell 无法可靠检测当前 agent 是否有 agent-native 生图能力\n"
-printf "    ${CYAN}规则:${RESET} 若当前 agent 自判能生成/编辑位图并保存到工作区，直接用；否则看下面 adapter 或 SVG fallback。\n"
+printf "  ${YELLOW}!${RESET} Shell 只能检测 CLI/API adapter，不能检测对话工具、MCP、插件或 IDE 原生生图能力\n"
+printf "    ${CYAN}规则:${RESET} 生成 script.json 后，agent 必须先做工具层自检 + sec-1 落盘探针；成功就优先生图。\n"
+printf "    ${CYAN}规则:${RESET} 不要把这条 Shell 提示当作 SVG fallback 的理由；只有没有候选工具、无法落盘或连续失败才 fallback。\n"
 
 GPT_IMAGE_2_GEN="${GPT_IMAGE_2_GEN:-$HOME/.pi/agent/skills/gpt-image-2/scripts/gen.sh}"
 if [[ -x "$GPT_IMAGE_2_GEN" ]]; then
@@ -86,7 +88,8 @@ fi
 
 if [[ "$g_ok" -eq 0 ]]; then
   printf "  ${YELLOW}!${RESET} 未检测到 API adapter 凭证\n"
-  printf "    ${CYAN}fallback:${RESET} 若当前 agent 也没有可用生图能力，运行 scripts/generate-slide-scenes.py 生成 SVG scene。\n"
+  printf "    ${CYAN}下一步:${RESET} 仍需检查当前 agent 的工具/skill/plugin/MCP 是否能生图并保存到 deck/assets/img。\n"
+  printf "    ${CYAN}fallback:${RESET} 只有 agent-native 自检和落盘探针不可用/失败时，才运行 scripts/generate-slide-scenes.py 生成 SVG scene。\n"
 fi
 
 echo

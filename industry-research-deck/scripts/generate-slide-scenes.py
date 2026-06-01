@@ -15,6 +15,21 @@ from typing import Any
 W, H = 1920, 1080
 
 THEMES = {
+    "excalidraw-whiteboard": {
+        "bg": "#fbfaf5",
+        "ink": "#111111",
+        "muted": "#6b6b62",
+        "line": "#2a2a2a",
+        "card": "#ffffff",
+        "card2": "#f8fbff",
+        "blue": "#6fb6d9",
+        "blue_soft": "#dff2fb",
+        "coral": "#c9a7eb",
+        "coral_soft": "#f0e4fb",
+        "green": "#7ccf9b",
+        "green_soft": "#e1f6e8",
+        "shadow": "#d9d4c8",
+    },
     "editorial-cinematic": {
         "bg": "#f6f9fc",
         "ink": "#172033",
@@ -385,7 +400,7 @@ def svg_for(section: dict[str, Any], style: str) -> tuple[str, list[str]]:
     if isinstance(section.get("visual"), dict):
         visual.setdefault("headline", section.get("title") or "")
     visual.setdefault("kicker", "SECTION")
-    c = THEMES.get(style, THEMES["editorial-cinematic"])
+    c = THEMES.get(style, THEMES["excalidraw-whiteboard"])
     layout = str(visual.get("layout") or "statement")
     drawer = LAYOUTS.get(layout, statement)
     body = drawer(visual, c)
@@ -409,7 +424,7 @@ def main() -> int:
         raise SystemExit("script.json must contain a non-empty sections array")
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    style = str(script.get("style") or "editorial-cinematic")
+    style = str(script.get("style") or "excalidraw-whiteboard")
     all_warnings: list[str] = []
     for i, section in enumerate(sections):
         if not isinstance(section, dict):

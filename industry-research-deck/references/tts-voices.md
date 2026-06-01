@@ -37,7 +37,8 @@ edge-tts 用微软 Neural TTS，免费、无 key、300+ voices、50+ 语言。
 
 | 视觉风格 | 推荐 voice |
 |---|---|
-| editorial-cinematic（默认） | XiaoxiaoNeural / YunxiNeural / AriaNeural |
+| excalidraw-whiteboard（默认） | XiaoxiaoNeural / YunxiNeural / AriaNeural |
+| editorial-cinematic（现代编辑部电影感） | XiaoxiaoNeural / YunxiNeural / AriaNeural |
 | kurzgesagt（扁平科普） | XiaoxiaoNeural / GuyNeural |
 | bloomberg（财经数据） | YunxiNeural / RogerNeural |
 | vox（新闻） | YunjianNeural / AriaNeural |

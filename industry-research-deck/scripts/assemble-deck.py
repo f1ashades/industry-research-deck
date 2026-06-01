@@ -46,11 +46,15 @@ def text(value: object) -> str:
     return html.escape(str(value), quote=False)
 
 
-def safe_style(value: object) -> str:
-    style = str(value or "editorial-cinematic")
-    if re.fullmatch(r"[a-z0-9-]+", style):
-        return style
-    return "editorial-cinematic"
+def safe_slug(value: object, fallback: str = "excalidraw-whiteboard") -> str:
+    """白名单 slug 校验，用于注入到 HTML 属性/选择器的 style 和 visual-mode。
+
+    只放行 [a-z0-9-]，挡住注入面；非法值回退到 fallback。
+    """
+    slug = str(value or fallback)
+    if re.fullmatch(r"[a-z0-9-]+", slug):
+        return slug
+    return fallback
 
 
 def source_label(url: str) -> str:
@@ -104,7 +108,7 @@ def build_section(deck_dir: Path, asset_prefix: str, section: dict, index: int) 
     if isinstance(visual, dict):
         visual_mode = visual.get("mode") or "slide-scene"
     if visual_mode:
-        visual_mode = safe_style(visual_mode)
+        visual_mode = safe_slug(visual_mode, "slide-scene")
 
     attrs = [
         f'    <section data-id="{attr(section_id)}" data-duration="{attr(duration)}"',
@@ -134,7 +138,7 @@ def inject(template: str, *, title: str, style: str, sections_html: str) -> str:
     return (
         template
         .replace(TITLE_TOKEN, text(title))
-        .replace(STYLE_TOKEN, style)         # safe_style 已限定 [a-z0-9-]
+        .replace(STYLE_TOKEN, style)         # safe_slug 已限定 [a-z0-9-]
         .replace(SECTIONS_TOKEN, sections_html)
     )
 
@@ -163,7 +167,7 @@ def main() -> int:
     sections_html = "\n\n".join(section_blocks)
 
     title = str(script.get("title") or "Industry Research Deck")
-    style = safe_style(script.get("style"))
+    style = safe_slug(script.get("style"))
 
     html_out = inject(template, title=title, style=style, sections_html=sections_html)
 

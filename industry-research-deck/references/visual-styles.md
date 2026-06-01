@@ -2,7 +2,46 @@
 
 每个风格定义：HTML `data-style` 值 + CSS 变量 + 生图 prompt 后缀。
 
-## 1. editorial-cinematic（默认）
+## 1. excalidraw-whiteboard（默认）
+
+**HTML**：`<body data-style="excalidraw-whiteboard">`
+
+**视觉特征**：
+- 白底，黑色手绘马克笔线条，线条略微抖动，有手画感
+- 类似 Excalidraw / whiteboard sketch / hand-drawn infographic
+- 柔和浅色填充，例如浅蓝、浅黄、浅绿、浅紫，颜色不要太重
+- 整体干净、清晰、适合中文课程讲义或知识付费文档
+- 用简单手绘图标、箭头、卡片、流程线、对比框表达概念
+- 16:9，信息层级清楚，留足空白，中文文字大且可读
+- 不要真实截图感，不要 3D，不要照片感，不要复杂背景
+- 不要品牌 logo，不要水印，不要过度装饰
+
+**生图 prompt 后缀**：
+```text
+请生成一张 Excalidraw 风格的手绘白板信息图。
+
+风格要求：
+- 白底，黑色手绘马克笔线条，线条略微抖动，有手画感
+- 类似 Excalidraw / whiteboard sketch / hand-drawn infographic
+- 使用柔和的浅色填充，比如浅蓝、浅黄、浅绿、浅紫，颜色不要太重
+- 整体干净、清晰、适合中文课程讲义或知识付费文档
+- 用简单的手绘图标、箭头、卡片、流程线、对比框来表达概念
+- 画面比例 16:9，信息层级清楚，留足空白
+- 中文文字要大、清晰、可读，不要太小
+- 不要真实截图感，不要 3D，不要照片感，不要复杂背景
+- 不要品牌 logo，不要水印，不要过度装饰
+
+视觉关键词：
+Excalidraw style, hand-drawn whiteboard, rough marker lines, clean educational infographic, pastel highlights, simple doodle icons, friendly professional course illustration.
+
+风格要像手绘说明图：一眼能看懂，适合放进长文档，不要像海报，要像老师在白板上画出来的结构图。
+```
+
+**适合**：默认行业研究、中文课程讲义、知识付费文档、结构化概念解释。
+
+---
+
+## 2. editorial-cinematic（现代编辑部电影感）
 
 **HTML**：`<body data-style="editorial-cinematic">`
 
@@ -20,7 +59,7 @@
 
 ---
 
-## 2. kurzgesagt（扁平科普）
+## 3. kurzgesagt（扁平科普）
 
 **HTML**：`<body data-style="kurzgesagt">`
 
@@ -38,7 +77,7 @@
 
 ---
 
-## 3. bloomberg（财经数据风）
+## 4. bloomberg（财经数据风）
 
 **HTML**：`<body data-style="bloomberg">`
 
@@ -55,7 +94,7 @@
 
 ---
 
-## 4. vox（解释性新闻风）
+## 5. vox（解释性新闻风）
 
 **HTML**：`<body data-style="vox">`
 
@@ -72,7 +111,7 @@
 
 ---
 
-## 5. bilibili-hardcore（B 站硬核风）
+## 6. bilibili-hardcore（B 站硬核风）
 
 **HTML**：`<body data-style="bilibili-hardcore">`
 
@@ -90,7 +129,7 @@
 
 ---
 
-## 6. stratechery（学术分析风）
+## 7. stratechery（学术分析风）
 
 **HTML**：`<body data-style="stratechery">`
 
@@ -108,7 +147,7 @@
 
 ---
 
-## 7. apple-keynote（极简风）
+## 8. apple-keynote（极简风）
 
 **HTML**：`<body data-style="apple-keynote">`
 

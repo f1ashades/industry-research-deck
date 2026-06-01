@@ -1,5 +1,48 @@
 # 改动说明(v2)
 
+## 10. 2026-06-02:默认生图风格改为 Excalidraw 手绘白板
+
+### 原痛点
+
+- 默认生图提示词偏现代编辑部电影感,容易生成海报、3D、照片感或复杂背景,不适合中文课程讲义和长文档中的结构说明图。
+
+### 改后
+
+- 默认 `style` 改为 `excalidraw-whiteboard`,生图 prompt 后缀改为 Excalidraw/whiteboard sketch/hand-drawn infographic 风格。
+- `SKILL.md`、`references/image-generators.md`、`references/visual-styles.md` 中的默认风格和示例 `image_prompt` 已统一为白底、黑色手绘马克笔线条、柔和浅色填充、清晰中文大字、避免 3D/照片感/复杂背景。
+- HTML 模板和 SVG fallback 主题新增 `excalidraw-whiteboard`,保证生图失败时兜底视觉也靠近手绘白板风格。
+
+## 9. 2026-06-01:生图机械校验 + 清理孤儿脚本
+
+### 原痛点
+
+- §4a 落盘探针的成功标准("文件存在 / 可读 / 接近 16:9 / 主体不是空白")全靠 agent 目视判断,没有可重复的机械兜底,生图返回竖图、半幅、纯色空白时容易漏判。
+- `generate-placeholders.py` 自第 6 条改动起已被 `generate-slide-scenes.py`(渲染真实 `visual` 内容)取代,但文件留在包里,工作流和 references 都不再引用,只画抽象装饰形状、不传达信息,是孤儿脚本。
+- `assemble-deck.py` 的 `safe_style()` 同时被 `style` 和 `visual_mode` 复用,命名语义混淆;`visual_mode` 非法时还会错误回退到风格名 `editorial-cinematic`。
+
+### 改后
+
+- 新增 `scripts/check-visual.py`:栅格图用 Pillow 查尺寸/宽高比/纯色空白(按非背景像素占比)/字幕区亮度,SVG 查 well-formed/viewBox 比例/是否含可绘制元素。退出码 = FAIL 数量,可像 `check-deps.sh` 一样 gate 流程。Pillow 缺失时退化为只查比例/SVG,不阻塞。
+- `SKILL.md` §4a:落盘探针和批量生成后各接一次 `check-visual.py`,机械校验通过才算成功;硬性视觉规则改为"先机械校验、再人工看错字"。§0 把 Pillow 列为可选依赖。
+- 删除孤儿 `generate-placeholders.py`;slide-scenes 在 `visual` 缺失时已能优雅降级,删除不丢功能。
+- `safe_style()` 改名 `safe_slug(value, fallback)`,style 与 visual_mode 共用同一白名单校验,`visual_mode` 非法时回退到 `slide-scene`。
+
+针对 v2 分析中发现的 3 个问题做的修正,新增 1 个校验脚本。
+
+## 8. 2026-05-28:跨 agent 生图自检与落盘探针
+
+### 原痛点
+
+- `check-deps.sh` 只能检测 CLI/API adapter,检测不到对话工具、MCP、插件或 IDE 原生生图能力。
+- Agent 容易把“Shell 无法检测 agent-native 生图能力”误读成“没有生图能力”,直接走 SVG fallback。
+- 缺少一个跨 agent 的统一判断:什么时候必须先尝试生图,什么时候才允许降级。
+
+### 改后
+
+- `SKILL.md` 加入硬规则:进入素材生成前必须做工具层自检,发现可调用生图能力就用第 1 段正式 prompt 做 `sec-1.png` 落盘探针。
+- `references/image-generators.md` 新增 Agent-native 自检协议:枚举候选能力、判断能否落盘、第 1 张即探针、验证文件、记录 `visual_backend`。
+- `check-deps.sh` 明确 Shell 提示不能作为 SVG fallback 理由;只有没有候选工具、无法落盘、用户禁用、adapter 未授权或连续失败才 fallback。
+
 ## 7. 2026-05-28:支持 Pi gpt-image-2 生图路径
 
 ### 原痛点
@@ -57,7 +100,7 @@ html_out = re.sub(r"<title[^>]*>.*?</title>", f"<title>{title}</title>", ...)
 `str.replace()` 没有任何元字符解释,反斜杠 / `$` / `&` / `\g<0>` 全部当字面量处理。
 
 未替换状态下打开模板,`__DECK_STYLE__` 不匹配任何 `body[data-style="..."]` 选择器,
-会自然 fallback 到 `:root` 默认变量(当前为 editorial-cinematic 风格)——无需额外兜底逻辑。
+会自然 fallback 到 `:root` 默认变量(当前为 excalidraw-whiteboard 风格)——无需额外兜底逻辑。
 
 ## 2. SKILL.md + check-deps.sh:Tavily 软化为可选
 

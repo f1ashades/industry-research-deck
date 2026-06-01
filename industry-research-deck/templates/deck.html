@@ -10,20 +10,33 @@
        通过 <body data-style="..."> 切换。每个风格只是一组 CSS 变量。
     */
     :root {
-      --bg: #f7f7f2;
-      --bg-grad: linear-gradient(135deg, #f7f7f2 0%, #ffffff 45%, #dfeaf3 100%);
-      --fg: #10141f;
-      --accent: #f05a3f;
-      --accent-2: #1768ac;
-      --muted: rgba(16, 20, 31, 0.62);
-      --title-scrim: rgba(247, 247, 242, 0.72);
-      --title-scrim-soft: rgba(247, 247, 242, 0.16);
+      --bg: #fbfaf5;
+      --bg-grad: #fbfaf5;
+      --fg: #111111;
+      --accent: #8ecae6;
+      --accent-2: #f9d77e;
+      --muted: rgba(17, 17, 17, 0.62);
+      --title-scrim: rgba(251, 250, 245, 0.78);
+      --title-scrim-soft: rgba(251, 250, 245, 0.2);
       --title-shadow: 0 2px 18px rgba(255, 255, 255, 0.24);
       --title-font: "Source Han Sans CN", "PingFang SC", "Inter", system-ui, sans-serif;
       --body-font: var(--title-font);
-      --radius: 14px;
+      --radius: 8px;
       --title-size: 64px;
       --body-size: 22px;
+    }
+    body[data-style="excalidraw-whiteboard"] {
+      --bg: #fbfaf5;
+      --bg-grad: #fbfaf5;
+      --fg: #111111;
+      --accent: #8ecae6;
+      --accent-2: #f9d77e;
+      --muted: rgba(17, 17, 17, 0.62);
+      --title-scrim: rgba(251, 250, 245, 0.78);
+      --title-scrim-soft: rgba(251, 250, 245, 0.2);
+      --title-shadow: 0 2px 18px rgba(255, 255, 255, 0.24);
+      --title-font: "Source Han Sans CN", "PingFang SC", "Inter", system-ui, sans-serif;
+      --radius: 8px;
     }
     body[data-style="editorial-cinematic"] {
       --bg: #f7f7f2;
@@ -345,10 +358,20 @@
       cursor: pointer;
       font-size: 28px;
       color: #fff;
-      letter-spacing: 0.05em;
+      padding: 24px;
+      text-align: center;
     }
     .autoplay-hint.show { display: flex; }
+    .autoplay-hint > span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: min(88vw, 720px);
+      line-height: 1.35;
+      white-space: normal;
+    }
     .autoplay-hint .icon {
+      flex: 0 0 auto;
       display: inline-block;
       width: 0.9em;
       height: 0.9em;
@@ -367,6 +390,11 @@
       border-left: 0.32em solid #fff;
       border-top: 0.22em solid transparent;
       border-bottom: 0.22em solid transparent;
+    }
+    @media (max-width: 560px) {
+      .autoplay-hint {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
